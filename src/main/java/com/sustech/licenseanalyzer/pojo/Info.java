@@ -1,5 +1,7 @@
 package com.sustech.licenseanalyzer.pojo;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 public class Info {
@@ -25,4 +27,20 @@ public class Info {
                 ", topics=" + Arrays.toString(topics) +
                 '}';
     }
+
+    public static void getInfoFromResultSet(Info res, ResultSet resultSet) {
+        try {
+            res.name = resultSet.getString(1);
+            res.html_url = resultSet.getString(2);
+            res.description = resultSet.getString(3);
+            res.created_time = resultSet.getString(4);
+            res.stargazers_count = resultSet.getInt(5);
+            res.forks_count = resultSet.getInt(6);
+            res.license = resultSet.getString(7);
+            res.topics = resultSet.getString(8).split(" ");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -3,7 +3,7 @@
 //import com.google.gson.Gson;
 //import com.google.gson.JsonObject;
 //import com.google.gson.reflect.TypeToken;
-//import com.sustech.licenseanalyzer.service.dto.Info;
+//import com.sustech.licenseanalyzer.pojo.Info;
 //import org.glassfish.jersey.client.ClientConfig;
 //import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 //

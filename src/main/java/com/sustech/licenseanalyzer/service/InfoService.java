@@ -1,31 +1,17 @@
 package com.sustech.licenseanalyzer.service;
 
 import com.sustech.licenseanalyzer.pojo.Info;
-import com.sustech.licenseanalyzer.service.util.Util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sustech.licenseanalyzer.pojo.Info.getInfoFromResultSet;
 import static com.sustech.licenseanalyzer.service.util.Util.select;
 
 // return Info or List<Info>
 public class InfoService {
-    public static void getInfoFromResultSet(Info res, ResultSet resultSet) {
-        try {
-            res.name = resultSet.getString(1);
-            res.html_url = resultSet.getString(2);
-            res.description = resultSet.getString(3);
-            res.created_time = resultSet.getString(4);
-            res.stargazers_count = resultSet.getInt(5);
-            res.forks_count = resultSet.getInt(6);
-            res.license = resultSet.getString(7);
-            res.topics = resultSet.getString(8).split(" ");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static List<Info> getInfoByName(String name) {
         List<Info> res = new ArrayList<>();
