@@ -16,9 +16,9 @@ public class InfoService {
         select("""
                         select pt.name, html_url, description, created_time, stargazers_count, forks_count, pt.license, array_to_string(ARRAY(SELECT unnest(array_agg(distinct(topic)))),' ')
                                from project_info join project_topic pt on project_info.name = pt.name
-                        where pt.name = ?\s
+                        where pt.name like ?\s
                         group by pt.name, html_url, description, created_time, stargazers_count, forks_count, pt.license;""",
-                (stmt) -> stmt.setString(1, name),
+                (stmt) -> stmt.setString(1, '%' + name + '%'),
                 (resultSet) -> {
                     Info i = new Info();
                     getInfoFromResultSet(i, resultSet);
