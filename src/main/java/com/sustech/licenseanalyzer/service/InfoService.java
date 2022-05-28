@@ -2,15 +2,13 @@ package com.sustech.licenseanalyzer.service;
 
 import com.sustech.licenseanalyzer.pojo.Info;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.sustech.licenseanalyzer.pojo.Info.getInfoFromResultSet;
 import static com.sustech.licenseanalyzer.service.util.Util.select;
 
-// return Info or List<Info>
+
 public class InfoService {
 
     public static List<Info> getInfoByName(String name) {
