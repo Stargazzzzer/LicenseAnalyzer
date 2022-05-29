@@ -27,17 +27,17 @@ public class LicenseService {
     public static List<LicenseTopic> getLicenseTopic() {
         List<LicenseTopic> res = new ArrayList<>();
         select("""
-                        select license, topic, cnt
-                                                       from (select license,
-                                                                    topic,
-                                                                    count(topic)                                                        as cnt,
-                                                                    row_number() over (partition by license order by count(topic) desc) as rnk
-                                                             from project_topic
-                                                             where license != 'null'
-                                                               and topic != 'java'
-                                                             group by license, topic) tmp
-                                                       where rnk <= 3
-                                                       order by license, cnt desc;""",
+                        select license, topic
+                                                                                  from (select license,
+                                                                                               topic,
+                                                                                               count(topic)                                                        as cnt,
+                                                                                               row_number() over (partition by license order by count(topic) desc) as rnk
+                                                                                        from project_topic
+                                                                                        where license != 'null'
+                                                                                          and topic != 'java'
+                                                                                        group by license, topic) tmp
+                                                                                  where rnk <= 3
+                                                                                  order by license;""",
                 resultSet -> {
                     LicenseTopic lp = new LicenseTopic();
                     getLicenseTopicFromResultSet(lp, resultSet);
