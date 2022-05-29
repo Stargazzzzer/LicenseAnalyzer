@@ -11,9 +11,14 @@ public class InfoController {
         return "Get Info Hello";
     }
 
-    @GetMapping(value = "/info/by_name/{name}")
+    @GetMapping(value = "/info/search/{name}")
+    public Object searchByName(@PathVariable("name") String name) {
+        return InfoService.searchInfoByName(name);
+    }
+
+    @GetMapping(value = "/info/get/{name}")
     public Object getByName(@PathVariable("name") String name) {
-        return InfoService.getInfoByName(name);
+        return InfoService.getInfo(name);
     }
 
     @GetMapping(value = "/info/by_license/{license_name}")
