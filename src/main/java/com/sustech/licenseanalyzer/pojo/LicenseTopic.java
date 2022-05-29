@@ -5,12 +5,12 @@ import java.sql.SQLException;
 
 public class LicenseTopic {
     public String license;
-    public String topic;
+    public String[] topics;
 
     public static void getLicenseTopicFromResultSet(LicenseTopic res, ResultSet resultSet) {
         try {
             res.license = resultSet.getString(1);
-            res.topic = resultSet.getString(2);
+            res.topics = resultSet.getString(2).split(" ");
         } catch (SQLException e) {
             e.printStackTrace();
         }

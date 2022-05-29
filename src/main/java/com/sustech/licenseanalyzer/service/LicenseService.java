@@ -13,9 +13,11 @@ public class LicenseService {
     public static List<Counter> getAllLicense() {
         List<Counter> res = new ArrayList<>();
         select("""
-                        select license, count(license)
+                        select license, count(license) cnt
                         from project_info
-                        group by license;""",
+                        where license != 'null'
+                        group by license
+                        order by cnt desc;""",
                 (resultSet) -> {
                     Counter c = new Counter();
                     Counter.getCounterFromResultSet(c, resultSet);
@@ -27,17 +29,19 @@ public class LicenseService {
     public static List<LicenseTopic> getLicenseTopic() {
         List<LicenseTopic> res = new ArrayList<>();
         select("""
-                        select license, topic
-                                                                                  from (select license,
-                                                                                               topic,
-                                                                                               count(topic)                                                        as cnt,
-                                                                                               row_number() over (partition by license order by count(topic) desc) as rnk
-                                                                                        from project_topic
-                                                                                        where license != 'null'
-                                                                                          and topic != 'java'
-                                                                                        group by license, topic) tmp
-                                                                                  where rnk <= 3
-                                                                                  order by license;""",
+                        select license,
+                        array_to_string(ARRAY(SELECT unnest(array_agg(distinct (topic)))), ' ')
+                        from (select license, topic
+                        from (select license,
+                             topic,
+                             row_number() over (partition by license order by count(topic) desc) as rnk
+                        from project_topic
+                        where license != 'null'
+                             and topic != 'java'
+                             group by license, topic) tmp
+                        where rnk <= 3
+                        order by license) tmp
+                        group by license;""",
                 resultSet -> {
                     LicenseTopic lp = new LicenseTopic();
                     getLicenseTopicFromResultSet(lp, resultSet);
