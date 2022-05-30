@@ -57,7 +57,7 @@ public class InfoService {
         select("""
                         select pt.name, html_url, description, created_time, stargazers_count, forks_count, pt.license, array_to_string(ARRAY(SELECT unnest(array_agg(distinct(topic)))),' ')
                                from project_info join project_topic pt on project_info.name = pt.name
-                        where pt.license = ?\s
+                        where pt.license = ?
                         group by pt.name, html_url, description, created_time, stargazers_count, forks_count, pt.license
                         order by stargazers_count desc;""",
                 (stmt) -> stmt.setString(1, license),
@@ -69,4 +69,20 @@ public class InfoService {
         return res;
     }
 
+    public static List<String> getInfoNameByLicense(String licenseName) {
+        List<String> res = new ArrayList<>();
+        select("""
+                        select pt.name
+                                                       from project_info
+                                                                join project_topic pt on project_info.name = pt.name
+                                                       where pt.license = ?
+                                                       group by pt.name, stargazers_count
+                                                       order by stargazers_count desc;""",
+                (stmt) -> stmt.setString(1, licenseName),
+                (resultSet) -> {
+                    Info i = new Info();
+                    res.add(resultSet.getString(1));
+                });
+        return res;
+    }
 }

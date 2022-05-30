@@ -25,4 +25,9 @@ public class InfoController {
     public Object getByLicense(@PathVariable("license_name") String licenseName) {
         return InfoService.getInfoByLicense(licenseName);
     }
+
+    @GetMapping(value = "/info/by_license/names/{license_name}")
+    public Object getNameByLicense(@PathVariable("license_name") String licenseName) {
+        return InfoService.getInfoNameByLicense(licenseName);
+    }
 }
