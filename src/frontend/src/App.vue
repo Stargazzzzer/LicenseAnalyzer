@@ -10,13 +10,16 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="detailsRequest"
-                >Details</el-dropdown-item
-              >
-              <el-dropdown-item @click="byTopicRequest"
-                >By Topic</el-dropdown-item
+                >Projects Count</el-dropdown-item
               >
               <el-dropdown-item @click="starsRequest">Stars</el-dropdown-item>
               <el-dropdown-item @click="forksRequest">Forks</el-dropdown-item>
+              <el-dropdown-item @click="byTopicRequest"
+                >Top3 Topics</el-dropdown-item
+              >
+              <!-- <el-dropdown-item @click="byLicenseRequest"
+                >Hottest Projects</el-dropdown-item
+              > -->
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -85,8 +88,30 @@
       <MyTable
         v-if="tableVisible"
         :table="tableData"
-        style="padding-left: 70px; background-color: #f8f5ef"
+        style="padding-left: 70px"
       ></MyTable>
+      <!-- <div >
+        <el-button v-if="listVisible" @click="licenseSearch(0)">{{ license_list[0] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(1)>{{ license_list[1] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(2)>{{ license_list[2] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(3)>{{ license_list[3] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(4)>{{ license_list[4] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(5)>{{ license_list[5] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(6)>{{ license_list[6] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(7)>{{ license_list[7] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(8)>{{ license_list[8] }}</el-button>
+        <br /><br />
+        <el-button v-if="listVisible" @click="licenseSearch(9)>{{ license_list[9] }}</el-button>
+        <br /><br />
+      </div> -->
     </el-row>
     <div v-if="projectInfoVisible">
       <p id="project_name"></p>
@@ -125,17 +150,19 @@ export default {
       hintVisible: true,
       chartVisible: false,
       tableVisible: false,
-      showChart: true,
+      listVisible: false,
       xAxis: [],
       yAxis: [],
       search_name: "",
       tableData: [],
       yAxisLabel0: "",
       options: [],
+      license_list: [],
     };
   },
   methods: {
     async detailsRequest() {
+      this.listVisible = false;
       this.hint2Visible = false;
       this.hintVisible = false;
       this.tableVisible = false;
@@ -164,6 +191,7 @@ export default {
         });
     },
     async byTopicRequest() {
+      this.listVisible = false;
       this.hint2Visible = false;
       this.hintVisible = false;
       this.tableVisible = true;
@@ -199,6 +227,7 @@ export default {
         });
     },
     async starsRequest() {
+      this.listVisible = false;
       this.hint2Visible = false;
       this.hintVisible = false;
       this.tableVisible = false;
@@ -207,7 +236,7 @@ export default {
       this.inputVisible = false;
       this.confirmVisible = false;
       this.yAxisLabel0 = "stars";
-      console.log("here" + this.yAxisLabel0);
+      // console.log("here" + this.yAxisLabel0);
       this.axios
         .get("/license/stars")
         .then((data) => {
@@ -228,6 +257,7 @@ export default {
         });
     },
     async forksRequest() {
+      this.listVisible = false;
       this.hint2Visible = false;
       this.hintVisible = false;
       this.tableVisible = false;
@@ -257,6 +287,7 @@ export default {
         });
     },
     async byNameRequest() {
+      this.listVisible = false;
       this.hint2Visible = true;
       this.hintVisible = false;
       this.tableVisible = false;
@@ -266,6 +297,7 @@ export default {
       this.projectInfoVisible = false;
     },
     async InputConfirmed() {
+      this.listVisible = false;
       this.hint2Visible = false;
       this.inputVisible = true;
       this.confirmVisible = true;
@@ -294,6 +326,32 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+    async byLicenseRequest() {
+      if (this.license_list.length == 0) {
+        this.axios
+          .get("/license/stars")
+          .then((data) => {
+            let count = 0;
+            for (let item in data.data) {
+              if (count++ > 10) {
+                break;
+              }
+              this.license_list.push(data.data[item].name);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      this.hint2Visible = false;
+      this.hintVisible = false;
+      this.tableVisible = false;
+      this.chartVisible = false;
+      this.inputVisible = false;
+      this.confirmVisible = false;
+      this.projectInfoVisible = false;
+      this.listVisible = true;
     },
     inputClear() {
       this.search_name = "";
