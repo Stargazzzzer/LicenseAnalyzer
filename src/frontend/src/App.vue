@@ -16,6 +16,7 @@
                 >By Topic</el-dropdown-item
               >
               <el-dropdown-item @click="starsRequest">Stars</el-dropdown-item>
+              <el-dropdown-item @click="forksRequest">Forks</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -23,15 +24,12 @@
       <el-col :span="4">
         <el-dropdown>
           <span class="el-dropdown-link" style="font-size: x-large">
-            Info<i class="el-icon-arrow-down el-icon--right"></i>
+            Project Info<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="byNameRequest"
                 >Search Project By Name</el-dropdown-item
-              >
-              <el-dropdown-item @click="byTopicRequest"
-                >By License</el-dropdown-item
               >
             </el-dropdown-menu>
           </template>
@@ -47,8 +45,21 @@
       <div v-if="hintVisible" style="font-size: 50px">Choose one query</div>
     </el-row>
     <el-row type="flex" justify="center" align="middle">
-      <el-col :span="4"
-        ><el-input v-if="inputVisible" v-model="search_name"></el-input
+      <el-col :span="4">
+        <el-select
+          clearable
+          filterable
+          v-if="inputVisible"
+          v-model="search_name"
+          placeholder="input"
+          size="large"
+          @clear="inputClear"
+          @input="inputChange"
+          ><el-option
+            v-for="(item, index) in options"
+            :key="index"
+            :label="item.label"
+            :value="item.value" /></el-select
       ></el-col>
       <el-col :span="4"
         ><el-button type="primary" @click="InputConfirmed" v-if="confirmVisible"
@@ -58,7 +69,7 @@
     </el-row>
     <br /><br /><br /><br />
     <el-row v-if="hint2Visible" type="flex" justify="center" align="middle"
-      ><div style="color: #2e479c">Try Inputting "algorithm-base"</div></el-row
+      ><div style="color: #2e479c">Try Inputting something</div></el-row
     >
 
     <br /><br />
@@ -68,6 +79,7 @@
         style="padding-left: 70px"
         :xAxisAttr="xAxis"
         :yAxisVal="yAxis"
+        :yAxisLabel="yAxisLabel0"
       ></MyChart>
       <br /><br />
       <MyTable
@@ -116,8 +128,10 @@ export default {
       showChart: true,
       xAxis: [],
       yAxis: [],
-      search_name: "algorithm-base",
+      search_name: "",
       tableData: [],
+      yAxisLabel0: "",
+      options: [],
     };
   },
   methods: {
@@ -129,6 +143,7 @@ export default {
       this.projectInfoVisible = false;
       this.inputVisible = false;
       this.confirmVisible = false;
+      this.yAxisLabel0 = "total number";
       this.axios
         .get("/license/details")
         .then((data) => {
@@ -142,7 +157,7 @@ export default {
             this.xAxis.push(data.data[item].name);
             this.yAxis.push(data.data[item].count);
           }
-          console.log(data.data);
+          // console.log(data.data);
         })
         .catch((err) => {
           console.log(err);
@@ -156,44 +171,32 @@ export default {
       this.projectInfoVisible = false;
       this.inputVisible = false;
       this.confirmVisible = false;
-      this.tableData = [
-        {
-          license: "gpl",
-          1: "spring",
-          2: "servlet",
-          3: "javafx",
-        },
-        {
-          license: "bsd",
-          1: "spring",
-          2: "servlet",
-          3: "javafx",
-        },
-        {
-          license: "mit",
-          1: "spring",
-          2: "servlet",
-          3: "javafx",
-        },
-      ];
-      // this.axios
-      //   .get("/license/by_topic")
-      //   .then((data) => {
-      //     this.xAxis = [];
-      //     this.yAxis = [];
-      //     let count = 0;
-      //     for (let item in data.data) {
-      //       if (count++ > 5) {
-      //         break;
-      //       }
-      //       this.xAxis.push(data.data[item].name);
-      //       this.yAxis.push(data.data[item].count);
-      //     }
-      //     console.log(data.data);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+
+      this.axios
+        .get("/license/by_topic")
+        .then((data) => {
+          this.xAxis = [];
+          this.yAxis = [];
+          // console.log(data.data);
+          for (let item in data.data) {
+            let obj = {
+              license: data.data[item].license,
+              1: "",
+              2: "",
+              3: "",
+            };
+            let count = 1;
+            for (let topic in data.data[item].topics) {
+              obj[count] = data.data[item].topics[topic];
+              count++;
+            }
+            this.tableData.push(obj);
+          }
+          // console.log(data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     async starsRequest() {
       this.hint2Visible = false;
@@ -203,6 +206,8 @@ export default {
       this.projectInfoVisible = false;
       this.inputVisible = false;
       this.confirmVisible = false;
+      this.yAxisLabel0 = "stars";
+      console.log("here" + this.yAxisLabel0);
       this.axios
         .get("/license/stars")
         .then((data) => {
@@ -216,7 +221,36 @@ export default {
             this.xAxis.push(data.data[item].name);
             this.yAxis.push(data.data[item].count);
           }
-          console.log(data.data);
+          // console.log(data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    async forksRequest() {
+      this.hint2Visible = false;
+      this.hintVisible = false;
+      this.tableVisible = false;
+      this.chartVisible = true;
+      this.projectInfoVisible = false;
+      this.inputVisible = false;
+      this.confirmVisible = false;
+      this.yAxisLabel0 = "forks";
+      console.log("here" + this.yAxisLabel0);
+      this.axios
+        .get("/license/forks")
+        .then((data) => {
+          this.xAxis = [];
+          this.yAxis = [];
+          let count = 0;
+          for (let item in data.data) {
+            if (count++ > 5) {
+              break;
+            }
+            this.xAxis.push(data.data[item].name);
+            this.yAxis.push(data.data[item].count);
+          }
+          // console.log(data.data);
         })
         .catch((err) => {
           console.log(err);
@@ -237,8 +271,9 @@ export default {
       this.confirmVisible = true;
       this.projectInfoVisible = true;
       this.axios
-        .get("/info/by_name/" + this.search_name)
+        .get("/info/get/" + this.search_name)
         .then((data) => {
+          // console.log(data);
           document.getElementById("project_name").innerHTML =
             "name: " + data.data[0].name;
           document.getElementById("project_html_url").innerHTML =
@@ -260,13 +295,47 @@ export default {
           console.log(err);
         });
     },
+    inputClear() {
+      this.search_name = "";
+      this.options = [];
+      this.$forceUpdate();
+    },
+    inputChange(val) {
+      this.options = [];
+      if (val.data == null) {
+        this.search_name = this.search_name.slice(
+          0,
+          this.search_name.length - 1
+        );
+      } else {
+        this.search_name += val.data;
+      }
+      // console.log(this.search_name);
+      this.axios
+        .get("/info/search/" + this.search_name)
+        .then((data) => {
+          let count = 0;
+          for (let item in data.data) {
+            this.options.push({
+              value: data.data[item],
+              label: data.data[item],
+            });
+            if (++count > 10) {
+              break;
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>
 
 <style>
 Page {
-  background: #e3cea3;
+  background: #f2e7d0;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

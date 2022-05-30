@@ -6,33 +6,41 @@
 import * as echarts from "echarts";
 export default {
   name: "MyChart",
-  props: ["xAxisAttr", "yAxisVal"],
+  props: ["xAxisAttr", "yAxisVal", "yAxisLabel"],
   data() {
     return {
       myChart: "",
       xAxis: this.xAxisAttr,
-      yAxis: this.yAxisVal,
+      yAxisValue: this.yAxisVal,
+      yAxisLabel0: this.yAxisLabel
     };
   },
   watch: {
     xAxisAttr(newVal) {
+      console.log("changexattr");
       this.xAxis = newVal;
       this.chartChange();
     },
     yAxisVal(newVal) {
-      this.yAxis = newVal;
+      console.log("changeaval");
+      this.yAxisValue = newVal;
       this.chartChange();
     },
+    yAxisLabel(newVal) {
+      console.log("change");
+      this.yAxisLabel0 = newVal;
+      this.chartChange();
+      console.log("here: " + this.yAxisLabel0);
+    }
   },
   methods: {
     chartChange() {
       let option = {
         title: {
-          text: "Data",
+          text: this.yAxisLabel0,
         },
         tooltip: {},
         legend: {
-          data: ["count"],
         },
         xAxis: {
           data: this.xAxis,
@@ -42,9 +50,8 @@ export default {
           {
             barGap: "50%",
             barCategoryGap: "50%",
-            name: "count",
             type: "bar",
-            data: this.yAxis,
+            data: this.yAxisValue,
             itemStyle: {
               normal: {
                 color: function (params) {
@@ -65,17 +72,17 @@ export default {
         ],
       };
       this.myChart.setOption(option, true);
+      this.$forceUpdate();
     },
 
     myEcharts() {
       this.myChart = echarts.init(document.getElementById("main"));
       let option = {
         title: {
-          text: "Demonstration",
+          text: this.yAxisLabel0
         },
         tooltip: {},
         legend: {
-          data: ["count"],
         },
         xAxis: {
           data: this.xAxis,
@@ -85,9 +92,8 @@ export default {
           {
             barGap: "50%",
             barCategoryGap: "50%",
-            name: "count",
             type: "bar",
-            data: this.yAxis,
+            data: this.yAxisValue,
             itemStyle: {
               normal: {
                 color: function (params) {
