@@ -57,10 +57,9 @@ public class InfoService {
         select("""
                         select pt.name, html_url, description, created_time, stargazers_count, forks_count, pt.license, array_to_string(ARRAY(SELECT unnest(array_agg(distinct(topic)))),' ')
                                from project_info join project_topic pt on project_info.name = pt.name
-                        where pt.license = ?
+                        where pt.license = ?\s
                         group by pt.name, html_url, description, created_time, stargazers_count, forks_count, pt.license
-                        order by stargazers_count desc
-                        limit 50;""",
+                        order by stargazers_count desc;""",
                 (stmt) -> stmt.setString(1, license),
                 (resultSet) -> {
                     Info i = new Info();
