@@ -5,7 +5,7 @@
 
 Public repositories on GitHub are often used to share open source software. For your repository to truly be open source, it is necessary to license it so that others are free to use, change, and distribute the software. 
 
-![image-20220531111232779](D:\Sustech\Java2\Project\LicenseAnalyzer\LicenseAnalyzer\ReportPics\image-20220531111232779.png)
+![image-20220531111232779](pics\image-20220531111232779.png)
 
 In this project, we created a Java program which analyzes the open-source license of repositories on GitHub from past 10 years.
 
@@ -46,4 +46,6 @@ These two mapping takes an argument 'name' and will return all information about
 
 
 ### Result Analysis
+
+Among all 2035414 repositories, 137306 of which has a license.
 
