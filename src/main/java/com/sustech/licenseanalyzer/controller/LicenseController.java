@@ -33,4 +33,20 @@ public class LicenseController {
     public Object getForksByLicense() {
         return LicenseService.getForkByLicense();
     }
+
+    @GetMapping(value = "/license/stars/compare")
+    public Object getStarCount() {
+        return LicenseService.getStarCount();
+    }
+
+    @GetMapping(value = "/license/forks/compare")
+    public Object getForkCount() {
+        return LicenseService.getForkCount();
+    }
+
+    @GetMapping(value = "/license/compare")
+    public Object getCompare() {
+        return LicenseService.compareCount();
+    }
+
 }

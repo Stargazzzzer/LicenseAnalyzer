@@ -83,4 +83,56 @@ public class LicenseService {
                 });
         return res;
     }
+
+    public static List<Integer> getStarCount() {
+        List<Integer> res = new ArrayList<>();
+        select("""
+                        select sum(stargazers_count)
+                                                                            from project_info
+                                                                            where license != 'null' and license != 'unlicense'
+                                                                            union
+                                                                            select sum(stargazers_count)
+                                                                            from project_info
+                                                                            where license = 'null' or license = 'unlicense';""",
+                (resultSet) -> {
+                    res.add(resultSet.getInt(1));
+                });
+        return res;
+    }
+
+    public static List<Integer> getForkCount() {
+        List<Integer> res = new ArrayList<>();
+        select("""
+                        select sum(forks_count)
+                        from project_info
+                        where license != 'null'
+                          and license != 'unlicense'
+                        union
+                        select sum(forks_count)
+                        from project_info
+                        where license = 'null'
+                           or license = 'unlicense';""",
+                (resultSet) -> {
+                    res.add(resultSet.getInt(1));
+                });
+        return res;
+    }
+
+    public static List<Integer> compareCount() {
+        List<Integer> res = new ArrayList<>();
+        select("""
+                        select count(name)
+                                                    from project_info
+                                                    where license != 'null'
+                                                      and license != 'unlicense'
+                                                    union
+                                                    select count(name)
+                                                    from project_info
+                                                    where license = 'null'
+                                                       or license = 'unlicense';""",
+                (resultSet) -> {
+                    res.add(resultSet.getInt(1));
+                });
+        return res;
+    }
 }
