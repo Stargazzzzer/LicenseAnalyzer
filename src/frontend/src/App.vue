@@ -350,7 +350,16 @@ export default {
       this.listVisible = true;
     },
     async CompareRequest() {
+      this.listVisible = false;
+      this.hint2Visible = false;
+      this.hintVisible = false;
+      this.tableVisible = false;
+      this.chartVisible = false;
+      this.projectInfoVisible = false;
+      this.inputVisible = false;
+      this.confirmVisible = false;
       this.compareTableVisible = true;
+      this.compareTableData = [];
       this.axios
         .get("/license/compare")
         .then((data) => {
@@ -391,40 +400,45 @@ export default {
           console.log(err);
         });
     },
-  },
-  htmlClick() {
-    location.href = this.jump_html;
-  },
-  inputClear() {
-    this.search_name = "";
-    this.options = [];
-    this.$forceUpdate();
-  },
-  inputChange(val) {
-    this.options = [];
-    if (val.data == null) {
-      this.search_name = this.search_name.slice(0, this.search_name.length - 1);
-    } else {
-      this.search_name += val.data;
-    }
-    // console.log(this.search_name);
-    this.axios
-      .get("/info/search/" + this.search_name)
-      .then((data) => {
-        let count = 0;
-        for (let item in data.data) {
-          this.options.push({
-            value: data.data[item],
-            label: data.data[item],
-          });
-          if (++count > 10) {
-            break;
+    htmlClick() {
+      location.href = this.jump_html;
+    },
+    inputClear() {
+      this.search_name = "";
+      this.options = [];
+      this.$forceUpdate();
+    },
+    inputChange(val) {
+      console.log("sf");
+      this.options = [];
+      if (val.data == null) {
+        this.search_name = this.search_name.slice(
+          0,
+          this.search_name.length - 1
+        );
+      } else {
+        this.search_name += val.data;
+      }
+      // console.log(this.search_name);
+      this.axios
+        .get("/info/search/" + this.search_name)
+        .then((data) => {
+          console.log(data);
+          let count = 0;
+          for (let item in data.data) {
+            this.options.push({
+              value: data.data[item],
+              label: data.data[item],
+            });
+            if (++count > 10) {
+              break;
+            }
           }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>
