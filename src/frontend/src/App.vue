@@ -9,6 +9,9 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
+              <el-dropdown-item @click="CompareRequest"
+                >Compare</el-dropdown-item
+              >
               <el-dropdown-item @click="detailsRequest"
                 >Projects Count</el-dropdown-item
               >
@@ -17,9 +20,6 @@
               <el-dropdown-item @click="byTopicRequest"
                 >Top3 Topics</el-dropdown-item
               >
-              <!-- <el-dropdown-item @click="byLicenseRequest"
-                >Hottest Projects</el-dropdown-item
-              > -->
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -90,28 +90,12 @@
         :table="tableData"
         style="padding-left: 70px"
       ></MyTable>
-      <!-- <div >
-        <el-button v-if="listVisible" @click="licenseSearch(0)">{{ license_list[0] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(1)>{{ license_list[1] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(2)>{{ license_list[2] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(3)>{{ license_list[3] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(4)>{{ license_list[4] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(5)>{{ license_list[5] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(6)>{{ license_list[6] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(7)>{{ license_list[7] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(8)>{{ license_list[8] }}</el-button>
-        <br /><br />
-        <el-button v-if="listVisible" @click="licenseSearch(9)>{{ license_list[9] }}</el-button>
-        <br /><br />
-      </div> -->
+      <CompareTable
+        v-if="compareTableVisible"
+        :table="compareTableData"
+        style="padding-left: 70px"
+      >
+      </CompareTable>
     </el-row>
     <div v-if="projectInfoVisible">
       <p id="project_name"></p>
@@ -138,11 +122,13 @@
 <script>
 import MyChart from "./components/MyChart.vue";
 import MyTable from "./components/MyTable.vue";
+import CompareTable from "./components/CompareTable.vue";
 export default {
   name: "App",
-  components: { MyChart, MyTable },
+  components: { MyChart, MyTable, CompareTable },
   data() {
     return {
+      compareTableVisible: false,
       hint2Visible: false,
       confirmVisible: false,
       projectInfoVisible: false,
@@ -155,14 +141,16 @@ export default {
       yAxis: [],
       search_name: "",
       tableData: [],
+      compareTableData: [],
       yAxisLabel0: "",
       options: [],
       license_list: [],
-      jump_html:''
+      jump_html: "",
     };
   },
   methods: {
     async detailsRequest() {
+      this.compareTableVisible = false;
       this.listVisible = false;
       this.hint2Visible = false;
       this.hintVisible = false;
@@ -192,6 +180,7 @@ export default {
         });
     },
     async byTopicRequest() {
+      this.compareTableVisible = false;
       this.listVisible = false;
       this.hint2Visible = false;
       this.hintVisible = false;
@@ -228,6 +217,7 @@ export default {
         });
     },
     async starsRequest() {
+      this.compareTableVisible = false;
       this.listVisible = false;
       this.hint2Visible = false;
       this.hintVisible = false;
@@ -258,6 +248,7 @@ export default {
         });
     },
     async forksRequest() {
+      this.compareTableVisible = false;
       this.listVisible = false;
       this.hint2Visible = false;
       this.hintVisible = false;
@@ -288,6 +279,7 @@ export default {
         });
     },
     async byNameRequest() {
+      this.compareTableVisible = false;
       this.listVisible = false;
       this.hint2Visible = true;
       this.hintVisible = false;
@@ -298,6 +290,7 @@ export default {
       this.projectInfoVisible = false;
     },
     async InputConfirmed() {
+      this.compareTableVisible = false;
       this.listVisible = false;
       this.hint2Visible = false;
       this.inputVisible = true;
@@ -330,6 +323,7 @@ export default {
         });
     },
     async byLicenseRequest() {
+      this.compareTableVisible = false;
       if (this.license_list.length == 0) {
         this.axios
           .get("/license/stars")
@@ -355,43 +349,82 @@ export default {
       this.projectInfoVisible = false;
       this.listVisible = true;
     },
-    htmlClick() {
-      location.href=this.jump_html;
-    },
-    inputClear() {
-      this.search_name = "";
-      this.options = [];
-      this.$forceUpdate();
-    },
-    inputChange(val) {
-      this.options = [];
-      if (val.data == null) {
-        this.search_name = this.search_name.slice(
-          0,
-          this.search_name.length - 1
-        );
-      } else {
-        this.search_name += val.data;
-      }
-      // console.log(this.search_name);
+    async CompareRequest() {
+      this.compareTableVisible = true;
       this.axios
-        .get("/info/search/" + this.search_name)
+        .get("/license/compare")
         .then((data) => {
-          let count = 0;
-          for (let item in data.data) {
-            this.options.push({
-              value: data.data[item],
-              label: data.data[item],
-            });
-            if (++count > 10) {
-              break;
-            }
-          }
+          let obj = {
+            term: "number",
+            licensed: data.data[0],
+            unlicensed: data.data[1],
+          };
+          this.compareTableData.push(obj);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      this.axios
+        .get("/license/stars/compare")
+        .then((data) => {
+          let obj = {
+            term: "stars",
+            licensed: data.data[0],
+            unlicensed: data.data[1],
+          };
+          this.compareTableData.push(obj);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      this.axios
+        .get("/license/forks/compare")
+        .then((data) => {
+          let obj = {
+            term: "forks",
+            licensed: data.data[0],
+            unlicensed: data.data[1],
+          };
+          this.compareTableData.push(obj);
         })
         .catch((err) => {
           console.log(err);
         });
     },
+  },
+  htmlClick() {
+    location.href = this.jump_html;
+  },
+  inputClear() {
+    this.search_name = "";
+    this.options = [];
+    this.$forceUpdate();
+  },
+  inputChange(val) {
+    this.options = [];
+    if (val.data == null) {
+      this.search_name = this.search_name.slice(0, this.search_name.length - 1);
+    } else {
+      this.search_name += val.data;
+    }
+    // console.log(this.search_name);
+    this.axios
+      .get("/info/search/" + this.search_name)
+      .then((data) => {
+        let count = 0;
+        for (let item in data.data) {
+          this.options.push({
+            value: data.data[item],
+            label: data.data[item],
+          });
+          if (++count > 10) {
+            break;
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
 };
 </script>
