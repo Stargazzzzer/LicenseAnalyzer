@@ -116,7 +116,7 @@
     <div v-if="projectInfoVisible">
       <p id="project_name"></p>
       <br /><br />
-      <p id="project_html_url"></p>
+      <a href="javascript:void(0)" id="project_html_url" @click="htmlClick"></a>
       <br /><br />
       <p id="project_description"></p>
       <br /><br />
@@ -158,6 +158,7 @@ export default {
       yAxisLabel0: "",
       options: [],
       license_list: [],
+      jump_html:''
     };
   },
   methods: {
@@ -308,8 +309,9 @@ export default {
           // console.log(data);
           document.getElementById("project_name").innerHTML =
             "name: " + data.data[0].name;
-          document.getElementById("project_html_url").innerHTML =
-            "html_url: " + data.data[0].html_url;
+          this.jump_html = data.data[0].html_url;
+          document.getElementById("project_html_url").innerText =
+            data.data[0].html_url;
           document.getElementById("project_description").innerHTML =
             "description: " + data.data[0].description;
           document.getElementById("project_created_time").innerHTML =
@@ -352,6 +354,9 @@ export default {
       this.confirmVisible = false;
       this.projectInfoVisible = false;
       this.listVisible = true;
+    },
+    htmlClick() {
+      location.href=this.jump_html;
     },
     inputClear() {
       this.search_name = "";
