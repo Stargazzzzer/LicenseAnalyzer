@@ -1,6 +1,8 @@
 <template>
   <body style="background-color: #f8f5ef">
     <br /><br /><br /><br /><br /><br /><br /><br />
+    <el-row type="flex" justify="center" align="middle"><h style="font-size: 65px; ">License Analysis</h></el-row>
+    <br><br><br>
     <el-row type="flex" justify="center" align="middle">
       <el-col :span="4">
         <el-dropdown size="medium" style="color: #3dc7a4">
@@ -44,9 +46,9 @@
     <br />
     <br />
 
-    <el-row type="flex" justify="center" align="middle">
+    <!-- <el-row type="flex" justify="center" align="middle">
       <div v-if="hintVisible" style="font-size: 50px">Choose one query</div>
-    </el-row>
+    </el-row> -->
     <el-row type="flex" justify="center" align="middle">
       <el-col :span="4">
         <el-select
@@ -75,7 +77,6 @@
       ><div style="color: #2e479c">Try Inputting something</div></el-row
     >
 
-    <br /><br />
     <el-row type="flex" justify="center" align="middle">
       <MyChart
         v-if="chartVisible"
@@ -97,8 +98,8 @@
       >
       </CompareTable>
     </el-row>
-    <div v-if="projectInfoVisible">
-      <p id="project_name"></p>
+    <div style="font-weight: bold;" v-if="projectInfoVisible">
+      <p  id="project_name"></p>
       <br /><br />
       <a href="javascript:void(0)" id="project_html_url" @click="htmlClick"></a>
       <br /><br />
